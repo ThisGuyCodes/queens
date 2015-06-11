@@ -15,13 +15,10 @@ var (
 )
 
 type Board struct {
-	grid   [][]bool
-	queens []Location
-}
+	grid [][]bool
 
-type Location struct {
-	X int
-	Y int
+	// The columns where there are existing queens
+	queens []int
 }
 
 func main() {
@@ -55,7 +52,7 @@ func createBoard(n int) Board {
 		grid[i] = row
 	}
 
-	locations := make([]Location, 0)
+	locations := make([]int, 0)
 
 	return Board{
 		grid:   grid,
@@ -73,7 +70,7 @@ func (b *Board) PlaceQueens(n int) error {
 
 	// Since len(queens) == len(grid), and they can't share rows,
 	// we'll just assign it one by it's number
-	y := n - 1
+	y := len(b.grid) - n
 	row := b.grid[y]
 
 placements:
@@ -85,16 +82,17 @@ placements:
 		}
 
 		// Check if this location violates the rules
-		for _, queen := range b.queens {
+		for queenY, queenX := range b.queens {
 			// See if the x or y match (same row/column), or diagonals (differences of x and y match)
-			if x == queen.X || y == queen.Y || abs(x-queen.X) == abs(y-queen.Y) {
+			// Y should never match, because it's assigned
+			if x == queenX || abs(x-queenX) == abs(y-queenY) {
 				continue placements
 			}
 		}
 
 		// Place the queen
 		row[x] = true
-		b.queens = append(b.queens, Location{X: x, Y: y})
+		b.queens = append(b.queens, x)
 
 		// Recurse!
 		err := b.PlaceQueens(n - 1)
