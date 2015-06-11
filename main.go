@@ -52,7 +52,10 @@ func createBoard(n int) Board {
 		grid[i] = row
 	}
 
-	locations := make([]int, 0)
+	locations := make([]int, n)
+	for i := range locations {
+		locations[i] = -1
+	}
 
 	return Board{
 		grid:   grid,
@@ -82,6 +85,10 @@ placements:
 
 		// Check if this location violates the rules
 		for queenY, queenX := range b.queens {
+			// Skip queens not assigned yet
+			if queenX == -1 {
+				break
+			}
 			// See if the x or y match (same row/column), or diagonals (differences of x and y match)
 			// Y should never match, because it's assigned
 			if x == queenX || abs(x-queenX) == abs(y-queenY) {
@@ -91,7 +98,7 @@ placements:
 
 		// Place the queen
 		b.grid[y][x] = true
-		b.queens = append(b.queens, x)
+		b.queens[y] = x
 
 		// Recurse!
 		err := b.PlaceQueens(n - 1)
@@ -99,7 +106,7 @@ placements:
 		if err != nil {
 			// Remove our queen
 			b.grid[y][x] = false
-			b.queens = b.queens[:len(b.queens)-1]
+			b.queens[y] = -1
 
 			// Continue to next option
 			continue placements
