@@ -70,41 +70,43 @@ func (b *Board) PlaceQueens(n int) error {
 	if n <= 0 {
 		return nil
 	}
+placements:
 	for y, row := range b.grid {
-	placements:
-		for x, placement := range row {
-			// Already a queen here
-			if placement {
-				continue placements
-			}
+		// Since len(queens) == len(grid), and they can't share columns,
+		// we'll just assign it one by it's number
+		x := n - 1
 
-			// Check if this location violates the rules
-			for _, queen := range b.queens {
-				// See if the x or y match (same row/column), or diagonals (differences of x and y match)
-				if x == queen.X || y == queen.Y || abs(x-queen.X) == abs(y-queen.Y) {
-					continue placements
-				}
-			}
-
-			// Place the queen
-			row[x] = true
-			b.queens = append(b.queens, Location{X: x, Y: y})
-
-			// Recurse!
-			err := b.PlaceQueens(n - 1)
-			// If we couldn't place the queens
-			if err != nil {
-				// Remove our queen
-				row[x] = false
-				b.queens = b.queens[:len(b.queens)-1]
-
-				// Continue to next option
-				continue placements
-			}
-
-			// We did place the queens, we did!
-			return nil
+		// Already a queen here
+		if row[x] {
+			continue placements
 		}
+
+		// Check if this location violates the rules
+		for _, queen := range b.queens {
+			// See if the x or y match (same row/column), or diagonals (differences of x and y match)
+			if x == queen.X || y == queen.Y || abs(x-queen.X) == abs(y-queen.Y) {
+				continue placements
+			}
+		}
+
+		// Place the queen
+		row[x] = true
+		b.queens = append(b.queens, Location{X: x, Y: y})
+
+		// Recurse!
+		err := b.PlaceQueens(n - 1)
+		// If we couldn't place the queens
+		if err != nil {
+			// Remove our queen
+			row[x] = false
+			b.queens = b.queens[:len(b.queens)-1]
+
+			// Continue to next option
+			continue placements
+		}
+
+		// We did place the queens, we did!
+		return nil
 	}
 
 	// Couldn't find a place for the queen :(
