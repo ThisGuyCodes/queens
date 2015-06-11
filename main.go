@@ -70,11 +70,14 @@ func (b *Board) PlaceQueens(n int) error {
 	if n <= 0 {
 		return nil
 	}
+
+	// Since len(queens) == len(grid), and they can't share rows,
+	// we'll just assign it one by it's number
+	y := n - 1
+	row := b.grid[y]
+
 placements:
-	for y, row := range b.grid {
-		// Since len(queens) == len(grid), and they can't share columns,
-		// we'll just assign it one by it's number
-		x := n - 1
+	for x := range row {
 
 		// Already a queen here
 		if row[x] {
